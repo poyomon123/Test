@@ -2412,7 +2412,8 @@
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-                return response.json ? response.json() : response.text();
+                // Make webhook은 "Accepted" 텍스트를 반환하므로 text()로 처리
+                return response.text();
             })
             .then(data => {
                 // 성공 메시지 표시
