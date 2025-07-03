@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GODAH BAGEL 예약주문 시스템</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.6s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+            font-family: 'Georgia', serif;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #8B4513;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.2);
+        }
+
+        .menu-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .menu-category {
+            margin-bottom: 25px;
+        }
+
+        .category-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #8B4513;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .menu-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-item input[type="number"] {
+            width: 80px;
+            text-align: center;
+        }
+
+        .menu-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .menu-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .order-type-mini {
+            display: none;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .order-type-mini.show {
+            display: flex;
+        }
+
+        .order-type-mini-btn {
+            padding: 6px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .order-type-mini-btn.selected {
+            background: #8B4513;
+            color: white;
+            border-color: #8B4513;
+        }
+
+        .order-type-mini-btn:hover {
+            border-color: #8B4513;
+        }
+
+        .package-option {
+            display: none;
+            gap: 5px;
+            align-items: center;
+            margin-left: 10px;
+        }
+
+        .package-option.show {
+            display: flex;
+        }
+
+        .package-option-btn {
+            padding: 6px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .package-option-btn.selected {
+            background: #D2691E;
+            color: white;
+            border-color: #D2691E;
+        }
+
+        .package-option-btn:hover {
+            border-color: #D2691E;
+        }
+
+        .temperature-select {
+            display: none;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .temperature-select.show {
+            display: flex;
+        }
+
+        .temperature-btn {
+            padding: 6px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .temperature-btn.selected {
+            background: #D2691E;
+            color: white;
+            border-color: #D2691E;
+        }
+
+        .temperature-btn:hover {
+            border-color: #D2691E;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .quantity-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            background: #f0f0f0;
+            color: #333;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-btn:hover {
+            background: #8B4513;
+            color: white;
+        }
+
+        .quantity-btn:active {
+            transform: scale(0.95);
+        }
+
+        .quantity-control input[type="number"] {
+            border: none;
+            width: 60px;
+            text-align: center;
+            font-weight: 600;
+            -moz-appearance: textfield;
+        }
+
+        .quantity-control input[type="number"]::-webkit-outer-spin-button,
+        .quantity-control input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .menu-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .menu-name-sub {
+            font-size: 12px;
+            color: #666;
+            margin-left: 5px;
+            font-weight: normal;
+        }
+
+        .menu-price {
+            color: #8B4513;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 69, 19, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .total-section {
+            background: #FFF8DC;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: right;
+            border: 2px solid #D2691E;
+        }
+
+        .total-amount {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .success-message {
+            display: none;
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .datetime-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .datetime-input input {
+            flex: 1;
+        }
+
+        .cheese-option {
+            display: none;
+            gap: 5px;
+            align-items: center;
+            margin-left: 10px;
+        }
+
+        .cheese-option.show {
+            display: flex;
+        }
+
+        .cheese-option-btn {
+            padding: 6px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .cheese-option-btn.selected {
+            background: #8B4513;
+            color: white;
+            border-color: #8B4513;
+        }
+
+        .cheese-option-btn:hover {
+            border-color: #8B4513;
+        }
+
+        .bagel-selector-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bagel-selector-modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .bagel-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bagel-select-item {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bagel-select-item:hover {
+            border-color: #8B4513;
+            background: #FFF8DC;
+        }
+
+        .bagel-select-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .bagel-select-item.disabled:hover {
+            border-color: #e0e0e0;
+            background: white;
+        }
+
+        .bagel-cheese-info {
+            font-size: 12px;
+            color: #D2691E;
+            font-style: italic;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .order-summary-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .order-summary-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .order-summary-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .order-summary-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .order-item-info {
+            flex: 1;
+        }
+
+        .order-item-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .order-item-details {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .order-item-price {
+            font-weight: 600;
+            color: #8B4513;
+            white-space: nowrap;
+        }
+
+        .order-summary-empty {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .menu-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .menu-info {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GODAH BAGEL</h1>
+        <p class="subtitle">give thanks in all</p>
+        
+        <form id="reservationForm">
+            <div class="form-group">
+                <label for="customerName">이름 *</label>
+                <input type="text" id="customerName" name="customerName" required placeholder="홍길동">
+            </div>
+
+            <div class="form-group">
+                <label for="customerPhone">연락처 *</label>
+                <input type="tel" id="customerPhone" name="customerPhone" required placeholder="010-1234-5678">
+            </div>
+
+            <div class="form-group">
+                <label>픽업 날짜 및 시간 *</label>
+                <div class="datetime-input">
+                    <input type="date" id="pickupDate" name="pickupDate" required>
+                    <input type="time" id="pickupTime" name="pickupTime" required min="09:00" max="21:00">
+                </div>
+            </div>
+
+            <div class="menu-section">
+                <h3 style="margin-bottom: 20px; color: #333; text-align: center;">MENU</h3>
+                
+                <!-- 베이글 카테고리 -->
+                <div class="menu-category">
+                    <div class="category-title">베이글</div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">플레인B</div>
+                            <div class="menu-price">3,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="plainb-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="plainb" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="plainb" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="package-option" id="plainb-package">
+                                <button type="button" class="package-option-btn" data-menu="plainb" data-package="toasted">🔥 구워서 포장</button>
+                                <button type="button" class="package-option-btn" data-menu="plainb" data-package="plain">📦 그대로 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="plainb-qty">−</button>
+                                <input type="number" class="menu-quantity" id="plainb-qty" data-price="3500" data-name="플레인B" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="plainb-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">통밀B</div>
+                            <div class="menu-price">3,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="wheatb-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="wheatb" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="wheatb" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="package-option" id="wheatb-package">
+                                <button type="button" class="package-option-btn" data-menu="wheatb" data-package="toasted">🔥 구워서 포장</button>
+                                <button type="button" class="package-option-btn" data-menu="wheatb" data-package="plain">📦 그대로 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="wheatb-qty">−</button>
+                                <input type="number" class="menu-quantity" id="wheatb-qty" data-price="3500" data-name="통밀B" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="wheatb-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">에브리띵B</div>
+                            <div class="menu-price">3,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="everythingb-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="everythingb" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="everythingb" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="package-option" id="everythingb-package">
+                                <button type="button" class="package-option-btn" data-menu="everythingb" data-package="toasted">🔥 구워서 포장</button>
+                                <button type="button" class="package-option-btn" data-menu="everythingb" data-package="plain">📦 그대로 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="everythingb-qty">−</button>
+                                <input type="number" class="menu-quantity" id="everythingb-qty" data-price="3500" data-name="에브리띵B" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="everythingb-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">갈릭파마산B</div>
+                            <div class="menu-price">3,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="garlicparmesan-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="garlicparmesan" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="garlicparmesan" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="package-option" id="garlicparmesan-package">
+                                <button type="button" class="package-option-btn" data-menu="garlicparmesan" data-package="toasted">🔥 구워서 포장</button>
+                                <button type="button" class="package-option-btn" data-menu="garlicparmesan" data-package="plain">📦 그대로 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="garlicparmesan-qty">−</button>
+                                <input type="number" class="menu-quantity" id="garlicparmesan-qty" data-price="3500" data-name="갈릭파마산B" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="garlicparmesan-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">구운소금B</div>
+                            <div class="menu-price">3,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="roastedsalt-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="roastedsalt" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="roastedsalt" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="package-option" id="roastedsalt-package">
+                                <button type="button" class="package-option-btn" data-menu="roastedsalt" data-package="toasted">🔥 구워서 포장</button>
+                                <button type="button" class="package-option-btn" data-menu="roastedsalt" data-package="plain">📦 그대로 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="roastedsalt-qty">−</button>
+                                <input type="number" class="menu-quantity" id="roastedsalt-qty" data-price="3500" data-name="구운소금B" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="roastedsalt-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">올리브B</div>
+                            <div class="menu-price">3,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="oliveb-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="oliveb" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="oliveb" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="package-option" id="oliveb-package">
+                                <button type="button" class="package-option-btn" data-menu="oliveb" data-package="toasted">🔥 구워서 포장</button>
+                                <button type="button" class="package-option-btn" data-menu="oliveb" data-package="plain">📦 그대로 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="oliveb-qty">−</button>
+                                <input type="number" class="menu-quantity" id="oliveb-qty" data-price="3500" data-name="올리브B" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="oliveb-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">크렌베리롤치즈B</div>
+                            <div class="menu-price">3,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="cranberrycheese-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="cranberrycheese" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="cranberrycheese" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="package-option" id="cranberrycheese-package">
+                                <button type="button" class="package-option-btn" data-menu="cranberrycheese" data-package="toasted">🔥 구워서 포장</button>
+                                <button type="button" class="package-option-btn" data-menu="cranberrycheese" data-package="plain">📦 그대로 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="cranberrycheese-qty">−</button>
+                                <input type="number" class="menu-quantity" id="cranberrycheese-qty" data-price="3500" data-name="크렌베리롤치즈B" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="cranberrycheese-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">블루베리B</div>
+                            <div class="menu-price">3,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="blueberryb-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="blueberryb" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="blueberryb" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="package-option" id="blueberryb-package">
+                                <button type="button" class="package-option-btn" data-menu="blueberryb" data-package="toasted">🔥 구워서 포장</button>
+                                <button type="button" class="package-option-btn" data-menu="blueberryb" data-package="plain">📦 그대로 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="blueberryb-qty">−</button>
+                                <input type="number" class="menu-quantity" id="blueberryb-qty" data-price="3500" data-name="블루베리B" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="blueberryb-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">리얼시나몬B</div>
+                            <div class="menu-price">3,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="realcinnamon-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="realcinnamon" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="realcinnamon" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="package-option" id="realcinnamon-package">
+                                <button type="button" class="package-option-btn" data-menu="realcinnamon" data-package="toasted">🔥 구워서 포장</button>
+                                <button type="button" class="package-option-btn" data-menu="realcinnamon" data-package="plain">📦 그대로 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="realcinnamon-qty">−</button>
+                                <input type="number" class="menu-quantity" id="realcinnamon-qty" data-price="3500" data-name="리얼시나몬B" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="realcinnamon-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">이탈리안토마토B</div>
+                            <div class="menu-price">3,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="italiantomato-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="italiantomato" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="italiantomato" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="package-option" id="italiantomato-package">
+                                <button type="button" class="package-option-btn" data-menu="italiantomato" data-package="toasted">🔥 구워서 포장</button>
+                                <button type="button" class="package-option-btn" data-menu="italiantomato" data-package="plain">📦 그대로 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="italiantomato-qty">−</button>
+                                <input type="number" class="menu-quantity" id="italiantomato-qty" data-price="3500" data-name="이탈리안토마토B" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="italiantomato-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">소금버터B</div>
+                            <div class="menu-price">3,900원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="saltbutter-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="saltbutter" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="saltbutter" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="package-option" id="saltbutter-package">
+                                <button type="button" class="package-option-btn" data-menu="saltbutter" data-package="toasted">🔥 구워서 포장</button>
+                                <button type="button" class="package-option-btn" data-menu="saltbutter" data-package="plain">📦 그대로 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="saltbutter-qty">−</button>
+                                <input type="number" class="menu-quantity" id="saltbutter-qty" data-price="3900" data-name="소금버터B" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="saltbutter-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">제로슈가B</div>
+                            <div class="menu-price">3,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="zerosugar-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="zerosugar" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="zerosugar" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="package-option" id="zerosugar-package">
+                                <button type="button" class="package-option-btn" data-menu="zerosugar" data-package="toasted">🔥 구워서 포장</button>
+                                <button type="button" class="package-option-btn" data-menu="zerosugar" data-package="plain">📦 그대로 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="zerosugar-qty">−</button>
+                                <input type="number" class="menu-quantity" id="zerosugar-qty" data-price="3500" data-name="제로슈가B" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="zerosugar-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 크림치즈 카테고리 -->
+                <div class="menu-category">
+                    <div class="category-title">크림치즈</div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">블루베리</div>
+                            <div class="menu-price">3,900원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="blueberrycream-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="blueberrycream" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="blueberrycream" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="cheese-option" id="blueberrycream-cheese">
+                                <button type="button" class="cheese-option-btn" data-menu="blueberrycream" data-cheese="spread">🧈 치즈 발라서</button>
+                                <button type="button" class="cheese-option-btn" data-menu="blueberrycream" data-cheese="separate">📦 치즈 따로</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="blueberrycream-qty">−</button>
+                                <input type="number" class="menu-quantity" id="blueberrycream-qty" data-price="3900" data-name="블루베리" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="blueberrycream-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">무화과</div>
+                            <div class="menu-price">3,900원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="fig-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="fig" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="fig" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="cheese-option" id="fig-cheese">
+                                <button type="button" class="cheese-option-btn" data-menu="fig" data-cheese="spread">🧈 치즈 발라서</button>
+                                <button type="button" class="cheese-option-btn" data-menu="fig" data-cheese="separate">📦 치즈 따로</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="fig-qty">−</button>
+                                <input type="number" class="menu-quantity" id="fig-qty" data-price="3900" data-name="무화과" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="fig-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">레몬딜</div>
+                            <div class="menu-price">3,900원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="lemondill-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="lemondill" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="lemondill" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="cheese-option" id="lemondill-cheese">
+                                <button type="button" class="cheese-option-btn" data-menu="lemondill" data-cheese="spread">🧈 치즈 발라서</button>
+                                <button type="button" class="cheese-option-btn" data-menu="lemondill" data-cheese="separate">📦 치즈 따로</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="lemondill-qty">−</button>
+                                <input type="number" class="menu-quantity" id="lemondill-qty" data-price="3900" data-name="레몬딜" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="lemondill-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">플레인</div>
+                            <div class="menu-price">3,900원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="plaincream-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="plaincream" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="plaincream" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="cheese-option" id="plaincream-cheese">
+                                <button type="button" class="cheese-option-btn" data-menu="plaincream" data-cheese="spread">🧈 치즈 발라서</button>
+                                <button type="button" class="cheese-option-btn" data-menu="plaincream" data-cheese="separate">📦 치즈 따로</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="plaincream-qty">−</button>
+                                <input type="number" class="menu-quantity" id="plaincream-qty" data-price="3900" data-name="플레인" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="plaincream-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">망고크랜베리</div>
+                            <div class="menu-price">3,900원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="mangocranberrycream-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="mangocranberrycream" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="mangocranberrycream" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="cheese-option" id="mangocranberrycream-cheese">
+                                <button type="button" class="cheese-option-btn" data-menu="mangocranberrycream" data-cheese="spread">🧈 치즈 발라서</button>
+                                <button type="button" class="cheese-option-btn" data-menu="mangocranberrycream" data-cheese="separate">📦 치즈 따로</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="mangocranberrycream-qty">−</button>
+                                <input type="number" class="menu-quantity" id="mangocranberrycream-qty" data-price="3900" data-name="망고크랜베리" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="mangocranberrycream-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">메이플시나몬</div>
+                            <div class="menu-price">3,900원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="maplecinnamoncream-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="maplecinnamoncream" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="maplecinnamoncream" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="cheese-option" id="maplecinnamoncream-cheese">
+                                <button type="button" class="cheese-option-btn" data-menu="maplecinnamoncream" data-cheese="spread">🧈 치즈 발라서</button>
+                                <button type="button" class="cheese-option-btn" data-menu="maplecinnamoncream" data-cheese="separate">📦 치즈 따로</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="maplecinnamoncream-qty">−</button>
+                                <input type="number" class="menu-quantity" id="maplecinnamoncream-qty" data-price="3900" data-name="메이플시나몬" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="maplecinnamoncream-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">썬드라이토마토</div>
+                            <div class="menu-price">3,900원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="sundriedtomatocream-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="sundriedtomatocream" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="sundriedtomatocream" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="cheese-option" id="sundriedtomatocream-cheese">
+                                <button type="button" class="cheese-option-btn" data-menu="sundriedtomatocream" data-cheese="spread">🧈 치즈 발라서</button>
+                                <button type="button" class="cheese-option-btn" data-menu="sundriedtomatocream" data-cheese="separate">📦 치즈 따로</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="sundriedtomatocream-qty">−</button>
+                                <input type="number" class="menu-quantity" id="sundriedtomatocream-qty" data-price="3900" data-name="썬드라이토마토" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="sundriedtomatocream-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">트러플</div>
+                            <div class="menu-price">3,900원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="trufflecream-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="trufflecream" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="trufflecream" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="cheese-option" id="trufflecream-cheese">
+                                <button type="button" class="cheese-option-btn" data-menu="trufflecream" data-cheese="spread">🧈 치즈 발라서</button>
+                                <button type="button" class="cheese-option-btn" data-menu="trufflecream" data-cheese="separate">📦 치즈 따로</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="trufflecream-qty">−</button>
+                                <input type="number" class="menu-quantity" id="trufflecream-qty" data-price="3900" data-name="트러플" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="trufflecream-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">마롱밤</div>
+                            <div class="menu-price">3,900원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="chestnutcream-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="chestnutcream" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="chestnutcream" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="cheese-option" id="chestnutcream-cheese">
+                                <button type="button" class="cheese-option-btn" data-menu="chestnutcream" data-cheese="spread">🧈 치즈 발라서</button>
+                                <button type="button" class="cheese-option-btn" data-menu="chestnutcream" data-cheese="separate">📦 치즈 따로</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="chestnutcream-qty">−</button>
+                                <input type="number" class="menu-quantity" id="chestnutcream-qty" data-price="3900" data-name="마롱밤" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="chestnutcream-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">그린어니언</div>
+                            <div class="menu-price">3,900원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="greenonion-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="greenonion" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="greenonion" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="cheese-option" id="greenonion-cheese">
+                                <button type="button" class="cheese-option-btn" data-menu="greenonion" data-cheese="spread">🧈 치즈 발라서</button>
+                                <button type="button" class="cheese-option-btn" data-menu="greenonion" data-cheese="separate">📦 치즈 따로</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="greenonion-qty">−</button>
+                                <input type="number" class="menu-quantity" id="greenonion-qty" data-price="3900" data-name="그린어니언" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="greenonion-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">베이컨쪽파</div>
+                            <div class="menu-price">3,900원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="baconscallion-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="baconscallion" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="baconscallion" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="cheese-option" id="baconscallion-cheese">
+                                <button type="button" class="cheese-option-btn" data-menu="baconscallion" data-cheese="spread">🧈 치즈 발라서</button>
+                                <button type="button" class="cheese-option-btn" data-menu="baconscallion" data-cheese="separate">📦 치즈 따로</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="baconscallion-qty">−</button>
+                                <input type="number" class="menu-quantity" id="baconscallion-qty" data-price="3900" data-name="베이컨쪽파" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="baconscallion-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">바질</div>
+                            <div class="menu-price">3,900원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="basilcream-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="basilcream" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="basilcream" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="cheese-option" id="basilcream-cheese">
+                                <button type="button" class="cheese-option-btn" data-menu="basilcream" data-cheese="spread">🧈 치즈 발라서</button>
+                                <button type="button" class="cheese-option-btn" data-menu="basilcream" data-cheese="separate">📦 치즈 따로</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="basilcream-qty">−</button>
+                                <input type="number" class="menu-quantity" id="basilcream-qty" data-price="3900" data-name="바질" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="basilcream-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 베이글샌드위치 카테고리 -->
+                <div class="menu-category">
+                    <div class="category-title">베이글샌드위치</div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">핫스리치킨 샌드위치</div>
+                            <div class="menu-price">9,000원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="hotchicken-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="hotchicken" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="hotchicken" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="hotchicken-qty">−</button>
+                                <input type="number" class="menu-quantity" id="hotchicken-qty" data-price="9000" data-name="핫스리치킨 샌드위치" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="hotchicken-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">훈제연어 샌드위치</div>
+                            <div class="menu-price">10,000원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="smokedsalmon-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="smokedsalmon" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="smokedsalmon" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="smokedsalmon-qty">−</button>
+                                <input type="number" class="menu-quantity" id="smokedsalmon-qty" data-price="10000" data-name="훈제연어 샌드위치" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="smokedsalmon-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">아보카도에그 샌드위치</div>
+                            <div class="menu-price">11,000원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="avocadoegg-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="avocadoegg" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="avocadoegg" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="avocadoegg-qty">−</button>
+                                <input type="number" class="menu-quantity" id="avocadoegg-qty" data-price="11000" data-name="아보카도에그 샌드위치" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="avocadoegg-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">트러플루벤 샌드위치</div>
+                            <div class="menu-price">12,000원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="trufflereuben-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="trufflereuben" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="trufflereuben" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="trufflereuben-qty">−</button>
+                                <input type="number" class="menu-quantity" id="trufflereuben-qty" data-price="12000" data-name="트러플루벤 샌드위치" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="trufflereuben-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 커피 카테고리 -->
+                <div class="menu-category">
+                    <div class="category-title">커피</div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">에스프레소</div>
+                            <div class="menu-price">4,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="temperature-select" id="espresso-temp">
+                                <button type="button" class="temperature-btn" data-menu="espresso" data-temp="hot">🔥 HOT</button>
+                                <button type="button" class="temperature-btn" data-menu="espresso" data-temp="ice">🧊 ICE</button>
+                            </div>
+                            <div class="order-type-mini" id="espresso-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="espresso" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="espresso" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="espresso-qty">−</button>
+                                <input type="number" class="menu-quantity" id="espresso-qty" data-price="4500" data-name="에스프레소" data-temptype="both" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="espresso-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">아메리카노</div>
+                            <div class="menu-price">4,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="temperature-select" id="americano-temp">
+                                <button type="button" class="temperature-btn" data-menu="americano" data-temp="hot">🔥 HOT</button>
+                                <button type="button" class="temperature-btn" data-menu="americano" data-temp="ice">🧊 ICE</button>
+                            </div>
+                            <div class="order-type-mini" id="americano-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="americano" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="americano" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="americano-qty">−</button>
+                                <input type="number" class="menu-quantity" id="americano-qty" data-price="4500" data-name="아메리카노" data-temptype="both" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="americano-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">카페라떼</div>
+                            <div class="menu-price">5,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="temperature-select" id="cafelatte-temp">
+                                <button type="button" class="temperature-btn" data-menu="cafelatte" data-temp="hot">🔥 HOT</button>
+                                <button type="button" class="temperature-btn" data-menu="cafelatte" data-temp="ice">🧊 ICE</button>
+                            </div>
+                            <div class="order-type-mini" id="cafelatte-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="cafelatte" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="cafelatte" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="cafelatte-qty">−</button>
+                                <input type="number" class="menu-quantity" id="cafelatte-qty" data-price="5500" data-name="카페라떼" data-temptype="both" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="cafelatte-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">바닐라헤이즐넛라떼</div>
+                            <div class="menu-price">6,000원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="temperature-select" id="vanillahazelnut-temp">
+                                <button type="button" class="temperature-btn" data-menu="vanillahazelnut" data-temp="hot">🔥 HOT</button>
+                                <button type="button" class="temperature-btn" data-menu="vanillahazelnut" data-temp="ice">🧊 ICE</button>
+                            </div>
+                            <div class="order-type-mini" id="vanillahazelnut-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="vanillahazelnut" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="vanillahazelnut" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="vanillahazelnut-qty">−</button>
+                                <input type="number" class="menu-quantity" id="vanillahazelnut-qty" data-price="6000" data-name="바닐라헤이즐넛라떼" data-temptype="both" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="vanillahazelnut-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">아인슈페너<span class="menu-name-sub">(ONLY ICE)</span></div>
+                            <div class="menu-price">6,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="einspanner-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="einspanner" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="einspanner" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="einspanner-qty">−</button>
+                                <input type="number" class="menu-quantity" id="einspanner-qty" data-price="6500" data-name="아인슈페너" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="einspanner-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">하겐다즈아포가토</div>
+                            <div class="menu-price">8,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="affogato-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="affogato" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="affogato" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="affogato-qty">−</button>
+                                <input type="number" class="menu-quantity" id="affogato-qty" data-price="8500" data-name="하겐다즈아포가토" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="affogato-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">콜드브루<span class="menu-name-sub">(ONLY ICE)</span></div>
+                            <div class="menu-price">6,000원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="coldbrew-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="coldbrew" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="coldbrew" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="coldbrew-qty">−</button>
+                                <input type="number" class="menu-quantity" id="coldbrew-qty" data-price="6000" data-name="콜드브루" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="coldbrew-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">콜드브루라떼<span class="menu-name-sub">(ONLY ICE)</span></div>
+                            <div class="menu-price">6,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="coldbrewlatte-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="coldbrewlatte" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="coldbrewlatte" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="coldbrewlatte-qty">−</button>
+                                <input type="number" class="menu-quantity" id="coldbrewlatte-qty" data-price="6500" data-name="콜드브루라떼" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="coldbrewlatte-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">시나몬크림라떼<span class="menu-name-sub">(ONLY ICE)</span></div>
+                            <div class="menu-price">6,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="cinnamoncream-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="cinnamoncream" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="cinnamoncream" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="cinnamoncream-qty">−</button>
+                                <input type="number" class="menu-quantity" id="cinnamoncream-qty" data-price="6500" data-name="시나몬크림라떼" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="cinnamoncream-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TEA 카테고리 -->
+                <div class="menu-category">
+                    <div class="category-title">TEA</div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">얼그레이</div>
+                            <div class="menu-price">5,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="temperature-select" id="earlgrey-temp">
+                                <button type="button" class="temperature-btn" data-menu="earlgrey" data-temp="hot">🔥 HOT</button>
+                                <button type="button" class="temperature-btn" data-menu="earlgrey" data-temp="ice">🧊 ICE</button>
+                            </div>
+                            <div class="order-type-mini" id="earlgrey-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="earlgrey" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="earlgrey" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="earlgrey-qty">−</button>
+                                <input type="number" class="menu-quantity" id="earlgrey-qty" data-price="5500" data-name="얼그레이" data-temptype="both" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="earlgrey-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">카모마일</div>
+                            <div class="menu-price">5,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="temperature-select" id="chamomile-temp">
+                                <button type="button" class="temperature-btn" data-menu="chamomile" data-temp="hot">🔥 HOT</button>
+                                <button type="button" class="temperature-btn" data-menu="chamomile" data-temp="ice">🧊 ICE</button>
+                            </div>
+                            <div class="order-type-mini" id="chamomile-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="chamomile" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="chamomile" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="chamomile-qty">−</button>
+                                <input type="number" class="menu-quantity" id="chamomile-qty" data-price="5500" data-name="카모마일" data-temptype="both" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="chamomile-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">피치우롱</div>
+                            <div class="menu-price">5,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="temperature-select" id="peachoolong-temp">
+                                <button type="button" class="temperature-btn" data-menu="peachoolong" data-temp="hot">🔥 HOT</button>
+                                <button type="button" class="temperature-btn" data-menu="peachoolong" data-temp="ice">🧊 ICE</button>
+                            </div>
+                            <div class="order-type-mini" id="peachoolong-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="peachoolong" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="peachoolong" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="peachoolong-qty">−</button>
+                                <input type="number" class="menu-quantity" id="peachoolong-qty" data-price="5500" data-name="피치우롱" data-temptype="both" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="peachoolong-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">쿨민트</div>
+                            <div class="menu-price">5,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="temperature-select" id="coolmint-temp">
+                                <button type="button" class="temperature-btn" data-menu="coolmint" data-temp="hot">🔥 HOT</button>
+                                <button type="button" class="temperature-btn" data-menu="coolmint" data-temp="ice">🧊 ICE</button>
+                            </div>
+                            <div class="order-type-mini" id="coolmint-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="coolmint" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="coolmint" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="coolmint-qty">−</button>
+                                <input type="number" class="menu-quantity" id="coolmint-qty" data-price="5500" data-name="쿨민트" data-temptype="both" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="coolmint-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">밀크티</div>
+                            <div class="menu-price">6,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="temperature-select" id="milktea-temp">
+                                <button type="button" class="temperature-btn" data-menu="milktea" data-temp="hot">🔥 HOT</button>
+                                <button type="button" class="temperature-btn" data-menu="milktea" data-temp="ice">🧊 ICE</button>
+                            </div>
+                            <div class="order-type-mini" id="milktea-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="milktea" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="milktea" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="milktea-qty">−</button>
+                                <input type="number" class="menu-quantity" id="milktea-qty" data-price="6500" data-name="밀크티" data-temptype="both" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="milktea-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">카모마일릴렉서<span class="menu-name-sub">(ONLY ICE)</span></div>
+                            <div class="menu-price">6,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="chamomilerelax-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="chamomilerelax" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="chamomilerelax" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="chamomilerelax-qty">−</button>
+                                <input type="number" class="menu-quantity" id="chamomilerelax-qty" data-price="6500" data-name="카모마일릴렉서" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="chamomilerelax-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">애플시나몬티<span class="menu-name-sub">(ONLY HOT)</span></div>
+                            <div class="menu-price">6,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="applecinnamon-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="applecinnamon" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="applecinnamon" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="applecinnamon-qty">−</button>
+                                <input type="number" class="menu-quantity" id="applecinnamon-qty" data-price="6500" data-name="애플시나몬티" data-temptype="hot" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="applecinnamon-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">배모과티<span class="menu-name-sub">(ONLY HOT)</span></div>
+                            <div class="menu-price">6,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="pearquince-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="pearquince" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="pearquince" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="pearquince-qty">−</button>
+                                <input type="number" class="menu-quantity" id="pearquince-qty" data-price="6500" data-name="배모과티" data-temptype="hot" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="pearquince-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">프리미엄핫초콜릿<span class="menu-name-sub">(ONLY HOT)</span></div>
+                            <div class="menu-price">7,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="premiumhotchoco-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="premiumhotchoco" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="premiumhotchoco" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="premiumhotchoco-qty">−</button>
+                                <input type="number" class="menu-quantity" id="premiumhotchoco-qty" data-price="7500" data-name="프리미엄핫초콜릿" data-temptype="hot" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="premiumhotchoco-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 에이드 카테고리 -->
+                <div class="menu-category">
+                    <div class="category-title">에이드</div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">레몬에이드<span class="menu-name-sub">(ICE)</span></div>
+                            <div class="menu-price">7,000원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="lemonade-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="lemonade" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="lemonade" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="lemonade-qty">−</button>
+                                <input type="number" class="menu-quantity" id="lemonade-qty" data-price="7000" data-name="레몬에이드" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="lemonade-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">아사이베리스무디<span class="menu-name-sub">(ICE)</span></div>
+                            <div class="menu-price">7,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="acaiberry-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="acaiberry" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="acaiberry" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="acaiberry-qty">−</button>
+                                <input type="number" class="menu-quantity" id="acaiberry-qty" data-price="7500" data-name="아사이베리스무디" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="acaiberry-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">모히또에이드<span class="menu-name-sub">(ICE)</span></div>
+                            <div class="menu-price">6,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="mojitoade-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="mojitoade" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="mojitoade" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="mojitoade-qty">−</button>
+                                <input type="number" class="menu-quantity" id="mojitoade-qty" data-price="6500" data-name="모히또에이드" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="mojitoade-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">복숭아에이드<span class="menu-name-sub">(ICE)</span></div>
+                            <div class="menu-price">7,000원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="peachade-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="peachade" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="peachade" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="peachade-qty">−</button>
+                                <input type="number" class="menu-quantity" id="peachade-qty" data-price="7000" data-name="복숭아에이드" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="peachade-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">초콜릿쉐이크<span class="menu-name-sub">(ICE)</span></div>
+                            <div class="menu-price">7,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="chocolateshake-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="chocolateshake" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="chocolateshake" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="chocolateshake-qty">−</button>
+                                <input type="number" class="menu-quantity" id="chocolateshake-qty" data-price="7500" data-name="초콜릿쉐이크" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="chocolateshake-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">바닐라쉐이크<span class="menu-name-sub">(ICE)</span></div>
+                            <div class="menu-price">7,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="vanillashake-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="vanillashake" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="vanillashake" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="vanillashake-qty">−</button>
+                                <input type="number" class="menu-quantity" id="vanillashake-qty" data-price="7500" data-name="바닐라쉐이크" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="vanillashake-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">딸기바나나쉐이크<span class="menu-name-sub">(ICE)</span></div>
+                            <div class="menu-price">7,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="strawberrybanana-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="strawberrybanana" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="strawberrybanana" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="strawberrybanana-qty">−</button>
+                                <input type="number" class="menu-quantity" id="strawberrybanana-qty" data-price="7500" data-name="딸기바나나쉐이크" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="strawberrybanana-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">말차쉐이크<span class="menu-name-sub">(ICE)</span></div>
+                            <div class="menu-price">7,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="matchashake-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="matchashake" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="matchashake" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="matchashake-qty">−</button>
+                                <input type="number" class="menu-quantity" id="matchashake-qty" data-price="7500" data-name="말차쉐이크" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="matchashake-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">방앗간미숫가루<span class="menu-name-sub">(ICE)</span></div>
+                            <div class="menu-price">7,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="grainpowder-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="grainpowder" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="grainpowder" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="grainpowder-qty">−</button>
+                                <input type="number" class="menu-quantity" id="grainpowder-qty" data-price="7500" data-name="방앗간미숫가루" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="grainpowder-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">아보카도바나나주스<span class="menu-name-sub">(ICE)</span></div>
+                            <div class="menu-price">7,500원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="avocadobanana-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="avocadobanana" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="avocadobanana" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="avocadobanana-qty">−</button>
+                                <input type="number" class="menu-quantity" id="avocadobanana-qty" data-price="7500" data-name="아보카도바나나주스" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="avocadobanana-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">오렌지파인주스<span class="menu-name-sub">(ICE)</span></div>
+                            <div class="menu-price">7,000원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="orangepine-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="orangepine" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="orangepine" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="orangepine-qty">−</button>
+                                <input type="number" class="menu-quantity" id="orangepine-qty" data-price="7000" data-name="오렌지파인주스" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="orangepine-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="menu-info">
+                            <div class="menu-name">하이드로웨이단백질쉐이크<span class="menu-name-sub">(ICE)</span></div>
+                            <div class="menu-price">8,000원</div>
+                        </div>
+                        <div class="menu-controls">
+                            <div class="order-type-mini" id="proteinshake-type">
+                                <button type="button" class="order-type-mini-btn" data-menu="proteinshake" data-type="dine-in">🪑 매장</button>
+                                <button type="button" class="order-type-mini-btn" data-menu="proteinshake" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn minus" data-target="proteinshake-qty">−</button>
+                                <input type="number" class="menu-quantity" id="proteinshake-qty" data-price="8000" data-name="하이드로웨이단백질쉐이크" data-temptype="ice" min="0" value="0" readonly>
+                                <button type="button" class="quantity-btn plus" data-target="proteinshake-qty">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="specialRequest">특별 요청사항</label>
+                <textarea id="specialRequest" name="specialRequest" rows="3" placeholder="예: 아이스 적게, 샷 추가 등"></textarea>
+            </div>
+
+            <div class="order-summary-section">
+                <div class="order-summary-title">주문 선택 목록</div>
+                <div class="order-summary-list" id="orderSummaryList">
+                    <div class="order-summary-empty">선택된 메뉴가 없습니다</div>
+                </div>
+            </div>
+
+            <div class="total-section">
+                <div class="total-amount">총 금액: <span id="totalAmount">0</span>원</div>
+            </div>
+
+            <button type="submit" class="submit-btn">예약 주문하기</button>
+        </form>
+
+        <div class="success-message" id="successMessage">
+            예약이 완료되었습니다! 픽업 시간에 맞춰 방문해주세요.
+        </div>
+    </div>
+
+    <script>
+        // 메뉴별 주문 타입과 온도 저장
+        const menuOrderTypes = {};
+        const menuTemperatures = {};
+        const menuPackageOptions = {};
+        const menuCheeseOptions = {};
+        const bagelCheeseMapping = {}; // 베이글과 치즈의 매핑
+
+        // 매장/포장 버튼 클릭 이벤트
+        document.querySelectorAll('.order-type-mini-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const menuName = this.dataset.menu;
+                const orderType = this.dataset.type;
+                
+                // 같은 메뉴의 다른 버튼들에서 selected 제거
+                document.querySelectorAll(`[data-menu="${menuName}"][data-type]`).forEach(b => {
+                    b.classList.remove('selected');
+                });
+                
+                // 클릭한 버튼에 selected 추가
+                this.classList.add('selected');
+                
+                // 주문 타입 저장
+                menuOrderTypes[menuName] = orderType;
+                
+                // 포장 옵션 표시/숨김 (베이글 카테고리만)
+                const packageOptionDiv = document.getElementById(`${menuName}-package`);
+                if (packageOptionDiv) {
+                    if (orderType === 'takeout') {
+                        packageOptionDiv.classList.add('show');
+                        // 기본값으로 그대로 포장 선택
+                        if (!menuPackageOptions[menuName]) {
+                            const plainBtn = packageOptionDiv.querySelector('[data-package="plain"]');
+                            if (plainBtn) plainBtn.click();
+                        }
+                    } else {
+                        packageOptionDiv.classList.remove('show');
+                        delete menuPackageOptions[menuName];
+                    }
+                }
+                
+                // 주문 목록 업데이트
+                updateOrderSummary();
+            });
+        });
+
+        // 포장 옵션 버튼 클릭 이벤트
+        document.querySelectorAll('.package-option-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const menuName = this.dataset.menu;
+                const packageOption = this.dataset.package;
+                
+                // 같은 메뉴의 다른 포장 옵션 버튼들에서 selected 제거
+                document.querySelectorAll(`[data-menu="${menuName}"][data-package]`).forEach(b => {
+                    b.classList.remove('selected');
+                });
+                
+                // 클릭한 버튼에 selected 추가
+                this.classList.add('selected');
+                
+                // 포장 옵션 저장
+                menuPackageOptions[menuName] = packageOption;
+                
+                // 주문 목록 업데이트
+                updateOrderSummary();
+            });
+        });
+
+        // 치즈 옵션 버튼 클릭 이벤트
+        document.querySelectorAll('.cheese-option-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const menuName = this.dataset.menu;
+                const cheeseOption = this.dataset.cheese;
+                
+                // 같은 메뉴의 다른 치즈 옵션 버튼들에서 selected 제거
+                document.querySelectorAll(`[data-menu="${menuName}"][data-cheese]`).forEach(b => {
+                    b.classList.remove('selected');
+                });
+                
+                // 클릭한 버튼에 selected 추가
+                this.classList.add('selected');
+                
+                // 치즈 옵션 저장
+                menuCheeseOptions[menuName] = cheeseOption;
+                
+                // 치즈 발라서를 선택한 경우 베이글 선택 모달 표시
+                if (cheeseOption === 'spread') {
+                    showBagelModal(menuName);
+                } else {
+                    // 치즈 따로 선택 시 주문 목록 업데이트
+                    updateOrderSummary();
+                }
+            });
+        });
+
+        // 온도 선택 버튼 클릭 이벤트
+        document.querySelectorAll('.temperature-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const menuName = this.dataset.menu;
+                const temperature = this.dataset.temp;
+                
+                // 같은 메뉴의 다른 온도 버튼들에서 selected 제거
+                document.querySelectorAll(`[data-menu="${menuName}"][data-temp]`).forEach(b => {
+                    b.classList.remove('selected');
+                });
+                
+                // 클릭한 버튼에 selected 추가
+                this.classList.add('selected');
+                
+                // 온도 저장
+                menuTemperatures[menuName] = temperature;
+                
+                // 주문 목록 업데이트
+                updateOrderSummary();
+            });
+        });
+
+        // +/- 버튼 이벤트 처리
+        document.querySelectorAll('.quantity-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetId = this.dataset.target;
+                const input = document.getElementById(targetId);
+                let currentValue = parseInt(input.value) || 0;
+                
+                if (this.classList.contains('plus')) {
+                    currentValue++;
+                } else if (this.classList.contains('minus') && currentValue > 0) {
+                    currentValue--;
+                }
+                
+                input.value = currentValue;
+                
+                // 메뉴 이름 추출 (예: americano-qty -> americano)
+                const menuName = targetId.replace('-qty', '');
+                
+                // 매장/포장 선택 버튼 표시/숨김
+                const orderTypeDiv = document.getElementById(`${menuName}-type`);
+                if (currentValue > 0) {
+                    orderTypeDiv.classList.add('show');
+                    // 기본값으로 매장 선택
+                    if (!menuOrderTypes[menuName]) {
+                        const dineInBtn = orderTypeDiv.querySelector('[data-type="dine-in"]');
+                        if (dineInBtn) dineInBtn.click();
+                    }
+                    
+                    // 치즈 옵션 표시 (크림치즈 메뉴인 경우)
+                    const cheeseOptionDiv = document.getElementById(`${menuName}-cheese`);
+                    if (cheeseOptionDiv) {
+                        cheeseOptionDiv.classList.add('show');
+                        // 기본값으로 치즈 따로 선택
+                        if (!menuCheeseOptions[menuName]) {
+                            const separateBtn = cheeseOptionDiv.querySelector('[data-cheese="separate"]');
+                            if (separateBtn) separateBtn.click();
+                        }
+                    }
+                } else {
+                    orderTypeDiv.classList.remove('show');
+                    delete menuOrderTypes[menuName];
+                    // 포장 옵션도 숨김
+                    const packageOptionDiv = document.getElementById(`${menuName}-package`);
+                    if (packageOptionDiv) {
+                        packageOptionDiv.classList.remove('show');
+                        delete menuPackageOptions[menuName];
+                    }
+                    // 치즈 옵션도 숨김
+                    const cheeseOptionDiv = document.getElementById(`${menuName}-cheese`);
+                    if (cheeseOptionDiv) {
+                        cheeseOptionDiv.classList.remove('show');
+                        delete menuCheeseOptions[menuName];
+                    }
+                }
+                
+                // 온도 선택 버튼 표시/숨김 (온도 선택이 가능한 메뉴인 경우)
+                const tempTypeDiv = document.getElementById(`${menuName}-temp`);
+                const tempType = input.dataset.temptype;
+                
+                if (tempTypeDiv) {
+                    if (currentValue > 0) {
+                        tempTypeDiv.classList.add('show');
+                        // 기본 온도 선택
+                        if (!menuTemperatures[menuName]) {
+                            if (tempType === 'ice') {
+                                const iceBtn = tempTypeDiv.querySelector('[data-temp="ice"]');
+                                if (iceBtn) iceBtn.click();
+                            } else if (tempType === 'hot') {
+                                const hotBtn = tempTypeDiv.querySelector('[data-temp="hot"]');
+                                if (hotBtn) hotBtn.click();
+                            } else {
+                                // both인 경우 ICE 기본 선택
+                                const iceBtn = tempTypeDiv.querySelector('[data-temp="ice"]');
+                                if (iceBtn) iceBtn.click();
+                            }
+                        }
+                    } else {
+                        tempTypeDiv.classList.remove('show');
+                        delete menuTemperatures[menuName];
+                    }
+                }
+                
+                calculateTotal();
+            });
+        });
+
+        // 총 금액 계산 및 주문 목록 업데이트
+        function calculateTotal() {
+            let total = 0;
+            const quantities = document.querySelectorAll('.menu-quantity');
+            
+            quantities.forEach(input => {
+                const price = parseInt(input.dataset.price);
+                const quantity = parseInt(input.value) || 0;
+                total += price * quantity;
+            });
+            
+            document.getElementById('totalAmount').textContent = total.toLocaleString();
+            
+            // 주문 목록 업데이트
+            updateOrderSummary();
+        }
+        
+        // 주문 목록 업데이트
+        function updateOrderSummary() {
+            const summaryList = document.getElementById('orderSummaryList');
+            summaryList.innerHTML = '';
+            
+            let hasItems = false;
+            
+            document.querySelectorAll('.menu-quantity').forEach(input => {
+                const quantity = parseInt(input.value) || 0;
+                if (quantity > 0) {
+                    hasItems = true;
+                    const menuName = input.id.replace('-qty', '');
+                    const itemName = input.dataset.name;
+                    const price = parseInt(input.dataset.price);
+                    
+                    // 상세 정보 수집
+                    const details = [];
+                    
+                    // 매장/포장
+                    if (menuOrderTypes[menuName]) {
+                        details.push(menuOrderTypes[menuName] === 'dine-in' ? '매장' : '포장');
+                    }
+                    
+                    // 포장 옵션 (베이글)
+                    if (menuPackageOptions[menuName]) {
+                        details.push(menuPackageOptions[menuName] === 'toasted' ? '구워서' : '그대로');
+                    }
+                    
+                    // 온도
+                    if (menuTemperatures[menuName]) {
+                        details.push(menuTemperatures[menuName] === 'hot' ? 'HOT' : 'ICE');
+                    }
+                    
+                    // 치즈 옵션
+                    if (menuCheeseOptions[menuName]) {
+                        if (menuCheeseOptions[menuName] === 'spread') {
+                            // 어떤 베이글에 발라지는지 찾기
+                            let bagelName = '';
+                            for (let bagelId in bagelCheeseMapping) {
+                                if (bagelCheeseMapping[bagelId] === menuName) {
+                                    const bagelInput = document.getElementById(bagelId + '-qty');
+                                    if (bagelInput) {
+                                        bagelName = bagelInput.dataset.name;
+                                    }
+                                    break;
+                                }
+                            }
+                            details.push(bagelName ? `${bagelName}에 발라서` : '치즈 발라서');
+                        } else {
+                            details.push('치즈 따로');
+                        }
+                    }
+                    
+                    // 주문 항목 생성
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'order-summary-item';
+                    itemDiv.innerHTML = `
+                        <div class="order-item-info">
+                            <div class="order-item-name">${itemName} x ${quantity}</div>
+                            ${details.length > 0 ? `<div class="order-item-details">${details.join(' / ')}</div>` : ''}
+                        </div>
+                        <div class="order-item-price">${(price * quantity).toLocaleString()}원</div>
+                    `;
+                    
+                    summaryList.appendChild(itemDiv);
+                }
+            });
+            
+            if (!hasItems) {
+                summaryList.innerHTML = '<div class="order-summary-empty">선택된 메뉴가 없습니다</div>';
+            }
+        }
+
+        // 베이글 선택 모달 표시
+        function showBagelModal(cheeseName) {
+            const modal = document.getElementById('bagelSelectorModal');
+            const bagelList = document.getElementById('bagelList');
+            
+            // 베이글 목록 초기화
+            bagelList.innerHTML = '';
+            
+            // 선택된 베이글 목록 생성
+            const bagelInputs = document.querySelectorAll('.menu-quantity[id$="b-qty"], .menu-quantity[id="plainb-qty"], .menu-quantity[id="wheatb-qty"], .menu-quantity[id="everythingb-qty"], .menu-quantity[id="garlicparmesan-qty"], .menu-quantity[id="roastedsalt-qty"], .menu-quantity[id="oliveb-qty"], .menu-quantity[id="cranberrycheese-qty"], .menu-quantity[id="blueberryb-qty"], .menu-quantity[id="realcinnamon-qty"], .menu-quantity[id="italiantomato-qty"], .menu-quantity[id="saltbutter-qty"], .menu-quantity[id="zerosugar-qty"]');
+            
+            bagelInputs.forEach(input => {
+                const quantity = parseInt(input.value) || 0;
+                if (quantity > 0) {
+                    const bagelName = input.dataset.name;
+                    const bagelId = input.id.replace('-qty', '');
+                    
+                    // 이미 다른 치즈가 선택된 베이글인지 확인
+                    const isDisabled = bagelCheeseMapping[bagelId] && bagelCheeseMapping[bagelId] !== cheeseName;
+                    
+                    const bagelItem = document.createElement('div');
+                    bagelItem.className = 'bagel-select-item' + (isDisabled ? ' disabled' : '');
+                    bagelItem.innerHTML = `
+                        <span>${bagelName} (${quantity}개)</span>
+                        ${isDisabled ? `<span class="bagel-cheese-info">${bagelCheeseMapping[bagelId]} 선택됨</span>` : ''}
+                    `;
+                    
+                    if (!isDisabled) {
+                        bagelItem.onclick = function() {
+                            selectBagelForCheese(bagelId, cheeseName);
+                        };
+                    }
+                    
+                    bagelList.appendChild(bagelItem);
+                }
+            });
+            
+            // 모달 표시
+            modal.classList.add('show');
+        }
+        
+        // 베이글에 치즈 매핑
+        function selectBagelForCheese(bagelId, cheeseName) {
+            // 기존에 이 치즈가 다른 베이글에 매핑되어 있다면 제거
+            for (let key in bagelCheeseMapping) {
+                if (bagelCheeseMapping[key] === cheeseName) {
+                    delete bagelCheeseMapping[key];
+                }
+            }
+            
+            // 새로운 매핑 설정
+            bagelCheeseMapping[bagelId] = cheeseName;
+            
+            // 모달 닫기
+            closeBagelModal();
+            
+            // 주문 목록 업데이트
+            updateOrderSummary();
+        }
+        
+        // 베이글 모달 닫기
+        function closeBagelModal() {
+            document.getElementById('bagelSelectorModal').classList.remove('show');
+        }
+
+        // 오늘 날짜를 최소값으로 설정
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('pickupDate').min = today;
+
+        // 폼 제출 처리
+        document.getElementById('reservationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 주문 내역 수집
+            const orderItems = [];
+            document.querySelectorAll('.menu-quantity').forEach(input => {
+                const quantity = parseInt(input.value) || 0;
+                if (quantity > 0) {
+                    const menuName = input.id.replace('-qty', '');
+                    
+                    // 매장/포장 선택 확인
+                    if (!menuOrderTypes[menuName]) {
+                        alert(`${input.dataset.name}의 매장/포장을 선택해주세요.`);
+                        return;
+                    }
+                    
+                    const item = {
+                        name: input.dataset.name,
+                        quantity: quantity,
+                        price: parseInt(input.dataset.price),
+                        orderType: menuOrderTypes[menuName] === 'dine-in' ? '매장' : '포장'
+                    };
+                    
+                    // 포장 옵션 정보가 있는 경우 추가
+                    if (menuOrderTypes[menuName] === 'takeout' && menuPackageOptions[menuName]) {
+                        item.packageOption = menuPackageOptions[menuName] === 'toasted' ? '구워서 포장' : '그대로 포장';
+                    }
+                    
+                    // 온도 정보가 있는 경우 추가
+                    if (menuTemperatures[menuName]) {
+                        item.temperature = menuTemperatures[menuName] === 'hot' ? 'HOT' : 'ICE';
+                    }
+                    
+                    // 치즈 옵션 정보가 있는 경우 추가
+                    if (menuCheeseOptions[menuName]) {
+                        item.cheeseOption = menuCheeseOptions[menuName] === 'spread' ? '치즈 발라서' : '치즈 따로';
+                        // 치즈 발라서인 경우 베이글 정보 추가
+                        if (menuCheeseOptions[menuName] === 'spread') {
+                            // 이 치즈가 어떤 베이글에 발라지는지 찾기
+                            for (let bagelId in bagelCheeseMapping) {
+                                if (bagelCheeseMapping[bagelId] === menuName) {
+                                    const bagelInput = document.getElementById(bagelId + '-qty');
+                                    if (bagelInput) {
+                                        item.spreadOnBagel = bagelInput.dataset.name;
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    orderItems.push(item);
+                }
+            });
+
+            if (orderItems.length === 0) {
+                alert('최소 1개 이상의 메뉴를 선택해주세요.');
+                return;
+            }
+
+            // 주문 정보 수집
+            const orderData = {
+                customerName: document.getElementById('customerName').value,
+                customerPhone: document.getElementById('customerPhone').value,
+                pickupDate: document.getElementById('pickupDate').value,
+                pickupTime: document.getElementById('pickupTime').value,
+                items: orderItems,
+                specialRequest: document.getElementById('specialRequest').value,
+                totalAmount: parseInt(document.getElementById('totalAmount').textContent.replace(/,/g, ''))
+            };
+
+            // 실제로는 서버로 전송하겠지만, 여기서는 콘솔에 출력
+            console.log('주문 정보:', orderData);
+
+            // 성공 메시지 표시
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // 폼 초기화
+            setTimeout(() => {
+                this.reset();
+                document.querySelectorAll('.order-type-mini').forEach(div => {
+                    div.classList.remove('show');
+                });
+                document.querySelectorAll('.package-option').forEach(div => {
+                    div.classList.remove('show');
+                });
+                document.querySelectorAll('.temperature-select').forEach(div => {
+                    div.classList.remove('show');
+                });
+                document.querySelectorAll('.cheese-option').forEach(div => {
+                    div.classList.remove('show');
+                });
+                document.querySelectorAll('.order-type-mini-btn, .temperature-btn, .package-option-btn, .cheese-option-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                calculateTotal();
+                document.getElementById('successMessage').style.display = 'none';
+                // 주문 타입과 온도, 포장 옵션 초기화
+                for (let key in menuOrderTypes) {
+                    delete menuOrderTypes[key];
+                }
+                for (let key in menuTemperatures) {
+                    delete menuTemperatures[key];
+                }
+                for (let key in menuPackageOptions) {
+                    delete menuPackageOptions[key];
+                }
+                for (let key in menuCheeseOptions) {
+                    delete menuCheeseOptions[key];
+                }
+                for (let key in bagelCheeseMapping) {
+                    delete bagelCheeseMapping[key];
+                }
+            }, 3000);
+        });
+    </script>
+
+    <!-- 베이글 선택 모달 -->
+    <div class="bagel-selector-modal" id="bagelSelectorModal">
+        <div class="modal-content">
+            <div class="modal-close" onclick="closeBagelModal()">×</div>
+            <div class="modal-header">어떤 베이글에 치즈를 바를까요?</div>
+            <div class="bagel-list" id="bagelList">
+                <!-- 동적으로 베이글 목록이 추가됩니다 -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>
