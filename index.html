@@ -2353,11 +2353,79 @@
                 totalAmount: parseInt(document.getElementById('totalAmount').textContent.replace(/,/g, ''))
             };
 
-            // 실제로는 서버로 전송하겠지만, 여기서는 콘솔에 출력
-            console.log('주문 정보:', orderData);
+            // Make webhook으로 데이터 전송
+            const MAKE_WEBHOOK_URL = 'https://hook.eu2.make.com/jsp1lud9kkmhoteabajm26cqcrl0op9q';
+            
+            // 로딩 표시
+            const submitBtn = document.querySelector('.submit-btn');
+            const originalBtnText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = '주문 처리 중...';
 
-            // 성공 메시지 표시
-            document.getElementById('successMessage').style.display = 'block';
+            // Webhook으로 데이터 전송
+            fetch(MAKE_WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    // 고객 정보
+                    customerName: orderData.customerName,
+                    customerPhone: orderData.customerPhone,
+                    pickupDate: orderData.pickupDate,
+                    pickupTime: orderData.pickupTime,
+                    
+                    // 주문 내역 - 노션에서 읽기 쉬운 형태로 변환
+                    orderDetails: orderData.items.map(item => {
+                        let itemDetail = `${item.name} (${item.quantity}개) - ${item.orderType}`;
+                        if (item.packageOption) {
+                            itemDetail += ` - ${item.packageOption}`;
+                        }
+                        if (item.temperature) {
+                            itemDetail += ` - ${item.temperature}`;
+                        }
+                        if (item.cheeseOption) {
+                            itemDetail += ` - ${item.cheeseOption}`;
+                            if (item.spreadOnBagel) {
+                                itemDetail += ` (${item.spreadOnBagel}에 바름)`;
+                            }
+                        }
+                        return itemDetail;
+                    }).join('\n'),
+                    
+                    // 개별 주문 항목 (노션 데이터베이스용)
+                    items: orderData.items,
+                    
+                    // 특별 요청사항
+                    specialRequest: orderData.specialRequest || '없음',
+                    
+                    // 총 금액
+                    totalAmount: orderData.totalAmount,
+                    
+                    // 주문 일시
+                    orderDateTime: new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json ? response.json() : response.text();
+            })
+            .then(data => {
+                // 성공 메시지 표시
+                document.getElementById('successMessage').style.display = 'block';
+                console.log('주문이 성공적으로 전송되었습니다:', data);
+            })
+            .catch(error => {
+                console.error('주문 전송 중 오류 발생:', error);
+                alert('주문 처리 중 오류가 발생했습니다. 다시 시도해주세요.\n\n오류 내용: ' + error.message);
+            })
+            .finally(() => {
+                // 버튼 상태 복원
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalBtnText;
+            });
             
             // 폼 초기화
             setTimeout(() => {
