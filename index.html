@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GODAH BAGEL 예약주문 시스템</title>
+    <title>TODAH BAGEL 예약주문 시스템</title>
     <style>
         * {
             margin: 0;
@@ -587,7 +587,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>GODAH BAGEL</h1>
+        <h1>TODAH BAGEL</h1>
         <p class="subtitle">give thanks in all</p>
         
         <form id="reservationForm">
@@ -661,6 +661,10 @@
                             <div class="order-type-mini" id="potatobaconsoup-type">
                                 <button type="button" class="order-type-mini-btn" data-menu="potatobaconsoup" data-type="dine-in">🪑 매장</button>
                                 <button type="button" class="order-type-mini-btn" data-menu="potatobaconsoup" data-type="takeout">🛍️ 포장</button>
+                            </div>
+                            <div class="package-option" id="potatobaconsoup-package">
+                                <button type="button" class="package-option-btn" data-menu="potatobaconsoup" data-package="heated">🔥 데워서 포장</button>
+                                <button type="button" class="package-option-btn" data-menu="potatobaconsoup" data-package="plain">📦 그대로 포장</button>
                             </div>
                             <div class="quantity-control">
                                 <button type="button" class="quantity-btn minus" data-target="potatobaconsoup-qty">−</button>
@@ -2145,9 +2149,13 @@
                         details.push(menuOrderTypes[menuName] === 'dine-in' ? '매장' : '포장');
                     }
                     
-                    // 포장 옵션 (베이글)
+                    // 포장 옵션 (베이글, 스프)
                     if (menuPackageOptions[menuName]) {
-                        details.push(menuPackageOptions[menuName] === 'toasted' ? '구워서' : '그대로');
+                        if (menuName === 'potatobaconsoup') {
+                            details.push(menuPackageOptions[menuName] === 'heated' ? '데워서' : '그대로');
+                        } else {
+                            details.push(menuPackageOptions[menuName] === 'toasted' ? '구워서' : '그대로');
+                        }
                     }
                     
                     // 온도
@@ -2290,7 +2298,11 @@
                     
                     // 포장 옵션 정보가 있는 경우 추가
                     if (menuOrderTypes[menuName] === 'takeout' && menuPackageOptions[menuName]) {
-                        item.packageOption = menuPackageOptions[menuName] === 'toasted' ? '구워서 포장' : '그대로 포장';
+                        if (menuName === 'potatobaconsoup') {
+                            item.packageOption = menuPackageOptions[menuName] === 'heated' ? '데워서 포장' : '그대로 포장';
+                        } else {
+                            item.packageOption = menuPackageOptions[menuName] === 'toasted' ? '구워서 포장' : '그대로 포장';
+                        }
                     }
                     
                     // 온도 정보가 있는 경우 추가
